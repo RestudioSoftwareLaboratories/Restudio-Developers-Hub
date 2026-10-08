@@ -1,0 +1,1934 @@
+<!DOCTYPE html>
+<html lang="en" id="htmlRoot">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title data-i18n="page.title">Restudio Developers Hub</title>
+    <link rel="icon" type="image/x-icon" href="https://i.postimg.cc/02cSd2QF/restudio-profile.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Tiny5&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Sans:wght@100;300;400;500;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+    <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.css" />
+    <script src="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.js"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', 'Noto Sans Arabic', 'Noto Sans JP', 'Noto Sans SC', 'Noto Sans Devanagari', system-ui, -apple-system, sans-serif;
+            background-color: #fafafa;
+            color: #1e1e1e;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        :root {
+            --rid-rose:  #ff6b8a;
+            --rid-green: #50B854;
+            --rid-blue:  #6699CC;
+            --rid-gold:  #ffd074;
+            --rid-ink:   #1d1d1f;
+        }
+
+        /* ===== Top Bar ===== */
+        .top-bar {
+            background-color: #000;
+            color: #fff;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .top-bar-left { display: flex; align-items: center; }
+        .top-bar img { height: 42px; width: auto; margin-right: 14px; border-radius: 6px; }
+        .top-bar-title {
+            font-family: "Tiny5", system-ui, sans-serif;
+            font-size: 30px;
+            color: #ffffff;
+        }
+        .top-bar-nav { display: flex; gap: 22px; align-items: center; }
+        .top-bar-nav a {
+            color: #cfcfcf;
+            text-decoration: none;
+            font-size: 0.92rem;
+            font-weight: 500;
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .top-bar-nav a:hover { color: #ffffff; }
+        .top-bar-nav .cta-small {
+            background: #ffffff;
+            color: #000 !important;
+            padding: 7px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        .top-bar-nav .cta-small:hover { background: #e5e5e5; }
+
+        .top-bar-nav a.nav-section-link { display: none; }
+        body.logged-in .top-bar-nav a.nav-section-link { display: flex; }
+
+        /* ===== Language Switcher ===== */
+        .lang-switcher { position: relative; display: inline-flex; align-items: center; }
+        .lang-switcher__btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #e5e5e5;
+            padding: 7px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+            font-family: inherit;
+        }
+        .lang-switcher__btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        .lang-switcher__btn i { font-size: 0.95rem; }
+        .lang-switcher__menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            padding: 6px;
+            min-width: 170px;
+            display: none;
+            z-index: 200;
+            border: 1px solid #eaeaef;
+        }
+        html[dir="rtl"] .lang-switcher__menu { right: auto; left: 0; }
+        .lang-switcher.open .lang-switcher__menu { display: block; animation: langFade 0.15s ease; }
+        @keyframes langFade {
+            from { opacity: 0; transform: translateY(-6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .lang-switcher__item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            border-radius: 7px;
+            cursor: pointer;
+            color: #1e1e1e;
+            font-size: 0.9rem;
+            transition: background 0.15s;
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: start;
+            font-family: inherit;
+        }
+        .lang-switcher__item:hover { background: #f5f5f7; }
+        .lang-switcher__item.active { background: #eff6ff; color: #3b82f6; font-weight: 600; }
+        .lang-switcher__flag {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 18px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #6b6b75;
+            background: #f0f0f4;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+        }
+        .lang-switcher__item.active .lang-switcher__flag { background: #3b82f6; color: #ffffff; }
+
+        /* ===== RestudioID Button ===== */
+        .register-btn-new {
+            all: unset;
+            position: relative;
+            display: inline-flex;
+            height: 2.5rem;
+            align-items: center;
+            border-radius: 9999px;
+            padding: 0 1.15rem;
+            font-family: inherit;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #1d1d1f;
+            letter-spacing: -0.02em;
+            cursor: pointer;
+            flex-shrink: 0;
+            white-space: nowrap;
+            line-height: 1.2;
+            overflow: hidden;
+            isolation: isolate;
+        }
+        .register-btn-new:focus-visible { box-shadow: 0 0 0 3px rgba(80, 184, 84, 0.45); }
+        .register-btn-bg {
+            background-color: var(--rid-gold);
+            overflow: hidden;
+            border-radius: 9999px;
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
+        }
+        .register-btn-bg-layers {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: -60%;
+            aspect-ratio: 1 / 1;
+            width: max(200%, 10rem);
+        }
+        .register-btn-bg-layer {
+            border-radius: 9999px;
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            transform: scale(0);
+            transition: transform 1.3s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        .register-btn-bg-layer.-layer1 { background-color: var(--rid-rose); }
+        .register-btn-bg-layer.-layer2 { background-color: var(--rid-green); transition-delay: 0.08s; }
+        .register-btn-bg-layer.-layer3 { background-color: var(--rid-blue);  transition-delay: 0.16s; }
+
+        .register-btn-inner {
+            position: relative;
+            z-index: 2;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            height: 100%;
+        }
+        .register-btn-inner-static,
+        .register-btn-inner-hover {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+        .register-btn-inner-static { transition: transform 1s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.3s linear; }
+        .register-btn-inner-hover {
+            position: absolute;
+            top: 0; left: 0;
+            height: 100%;
+            opacity: 0;
+            transform: translateY(70%);
+            transition: transform 1s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.3s linear;
+        }
+        .register-btn-new:hover .register-btn-inner-static { opacity: 0; transform: translateY(-70%); }
+        .register-btn-new:hover .register-btn-inner-hover { opacity: 1; transform: translateY(0); }
+        .register-btn-new:hover .register-btn-bg-layer { transform: scale(1); }
+        .register-btn-icon { font-size: 0.82rem; color: inherit; }
+        .register-btn-short-text { display: none; }
+
+        @media (max-width: 900px) {
+            .register-btn-new { height: 2.25rem; padding: 0 0.95rem; font-size: 0.7rem; }
+            .register-btn-full-text { display: none; }
+            .register-btn-short-text { display: inline; }
+        }
+
+        /* ===== Nav Avatar ===== */
+        .nav-avatar {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid var(--rid-green);
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
+            background-color: #2a2a2a;
+            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+        }
+        .nav-avatar:hover {
+            transform: scale(1.06);
+            border-color: #a7c957;
+            box-shadow: 0 0 0 4px rgba(80, 184, 84, 0.15);
+        }
+        .nav-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .nav-avatar .fallback-icon { font-size: 1.1rem; color: #e5e7eb; font-weight: 600; }
+
+        /* ===== Banner ===== */
+        .banner {
+            position: relative;
+            padding: 100px 32px 110px;
+            overflow: hidden;
+            --s: 84px;
+            --c1: #f2f2f2;
+            --c2: #cdcbcc;
+            --c3: #999999;
+            --_g: 0 120deg, #0000 0;
+            background: conic-gradient(from 0deg at calc(500% / 6) calc(100% / 3), var(--c3) var(--_g)),
+                        conic-gradient(from -120deg at calc(100% / 6) calc(100% / 3), var(--c2) var(--_g)),
+                        conic-gradient(from 120deg at calc(100% / 3) calc(500% / 6), var(--c1) var(--_g)),
+                        conic-gradient(from 120deg at calc(200% / 3) calc(500% / 6), var(--c1) var(--_g)),
+                        conic-gradient(from -180deg at calc(100% / 3) 50%, var(--c2) 60deg, var(--c1) var(--_g)),
+                        conic-gradient(from 60deg at calc(200% / 3) 50%, var(--c1) 60deg, var(--c3) var(--_g)),
+                        conic-gradient(from -60deg at 50% calc(100% / 3), var(--c1) 120deg, var(--c2) 0 240deg, var(--c3) 0);
+            background-size: calc(var(--s) * 1.732) var(--s);
+        }
+        .banner::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.35);
+            pointer-events: none;
+            z-index: 1;
+        }
+        .banner-content {
+            position: relative;
+            z-index: 2;
+            max-width: 780px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .banner-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.85);
+            border: 1px solid rgba(0, 0, 0, 0.9);
+            color: #e5e5e5;
+            padding: 6px 14px;
+            border-radius: 100px;
+            font-size: 0.82rem;
+            font-weight: 500;
+            margin-bottom: 26px;
+            backdrop-filter: blur(4px);
+        }
+        .banner-badge i { color: #58a6ff; font-size: 0.95rem; }
+        .banner-content h1 {
+            font-family: 'Ubuntu Sans', 'Noto Sans Arabic', 'Noto Sans JP', 'Noto Sans SC', 'Noto Sans Devanagari', sans-serif;
+            font-weight: 100;
+            font-size: 4rem;
+            margin-bottom: 22px;
+            color: #0f0f12;
+            letter-spacing: -0.5px;
+            line-height: 1.1;
+            text-shadow: 0 1px 20px rgba(255, 255, 255, 0.6);
+        }
+        .banner-content h1 span {
+            background: linear-gradient(135deg, #4f46e5 0%, #0ea5e9 50%, #14b8a6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .banner-content p {
+            font-size: 1.15rem;
+            color: #2a2a30;
+            max-width: 580px;
+            margin: 0 auto 38px;
+            font-weight: 500;
+            line-height: 1.65;
+            text-shadow: 0 1px 12px rgba(255, 255, 255, 0.5);
+        }
+        .banner-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 26px;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+        .btn-primary { background: #0f0f12; color: #ffffff; }
+        .btn-primary:hover { background: #2a2a30; transform: translateY(-1px); }
+        .btn-outline {
+            background: rgba(255, 255, 255, 0.85);
+            color: #0f0f12;
+            border-color: rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(4px);
+        }
+        .btn-outline:hover { background: #ffffff; border-color: rgba(0, 0, 0, 0.3); }
+
+        .banner-content .btn-primary { display: none; }
+        body.logged-in .banner-content .btn-primary { display: inline-flex; }
+
+        /* ===== Container & Sections ===== */
+        .container-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 90px 32px 60px;
+            flex: 1;
+            width: 100%;
+            display: none;
+        }
+        body.logged-in .container-main {
+            display: block;
+            animation: sectionFadeIn 0.5s ease;
+        }
+        @keyframes sectionFadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            max-width: 640px;
+            margin: 0 auto 56px;
+            text-align: center;
+        }
+        .section-eyebrow {
+            display: inline-block;
+            color: #6b6b75;
+            font-size: 0.78rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 14px;
+        }
+        .section-title {
+            font-family: 'Ubuntu Sans', 'Noto Sans Arabic', 'Noto Sans JP', 'Noto Sans SC', 'Noto Sans Devanagari', sans-serif;
+            font-weight: 100;
+            font-size: 2.8rem;
+            color: #0f0f12;
+            letter-spacing: -0.5px;
+            line-height: 1.15;
+            margin-bottom: 16px;
+        }
+        .section-subtitle { color: #5a5a64; font-size: 1.02rem; line-height: 1.7; }
+
+        .subsection-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #0f0f12;
+            margin: 40px 0 24px;
+            letter-spacing: -0.3px;
+        }
+        .subsection-title i {
+            color: #6b6b75;
+            font-size: 1.4rem;
+        }
+        .subsection-title:first-child { margin-top: 0; }
+
+        .products-section { margin-bottom: 110px; scroll-margin-top: 90px; }
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+            gap: 24px;
+        }
+        .product-card {
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid #eaeaef;
+            padding: 32px 28px;
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        .product-card:hover {
+            border-color: #d5d5dc;
+            box-shadow: 0 12px 32px rgba(15, 15, 18, 0.06);
+            transform: translateY(-3px);
+        }
+        .product-card.accent-blue { --accent: #3b82f6; --accent-soft: #eff6ff; }
+        .product-card.accent-teal { --accent: #0d9488; --accent-soft: #f0fdfa; }
+        .product-card.accent-amber { --accent: #d97706; --accent-soft: #fffbeb; }
+        .product-card.accent-purple { --accent: #7c3aed; --accent-soft: #f5f3ff; }
+        .product-card.accent-rose { --accent: #e11d48; --accent-soft: #fff1f2; }
+        .product-card.accent-cyan { --accent: #0891b2; --accent-soft: #ecfeff; }
+        .product-card.accent-indigo { --accent: #4f46e5; --accent-soft: #eef2ff; }
+
+        .product-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+        .product-icon {
+            width: 52px; height: 52px;
+            border-radius: 12px;
+            background: var(--accent-soft);
+            color: var(--accent);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.55rem;
+            flex-shrink: 0;
+        }
+        .product-tag {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--accent);
+            background: var(--accent-soft);
+            padding: 4px 10px;
+            border-radius: 100px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+        .product-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #0f0f12;
+            line-height: 1.3;
+            margin-bottom: 4px;
+            letter-spacing: -0.2px;
+        }
+        .product-version {
+            font-size: 0.85rem;
+            color: #8a8a94;
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+        .product-description {
+            color: #5a5a64;
+            font-size: 0.93rem;
+            line-height: 1.7;
+            margin-bottom: 22px;
+            flex: 1;
+        }
+        .product-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 20px;
+            border-top: 1px solid #f0f0f4;
+            gap: 12px;
+            margin-top: auto;
+        }
+        .product-price {
+            font-size: 0.78rem;
+            color: #8a8a94;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+        .product-price strong {
+            display: block;
+            font-size: 1rem;
+            color: #0f0f12;
+            text-transform: none;
+            letter-spacing: -0.2px;
+            margin-top: 2px;
+            font-weight: 700;
+        }
+        .product-btn {
+            background: #0f0f12;
+            color: #ffffff;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.87rem;
+            text-decoration: none;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .product-btn:hover { background: #2a2a30; transform: translateY(-1px); }
+        .product-btn i { font-size: 1rem; }
+
+        /* ===== View all sources button ===== */
+        .github-all-btn-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-top: 40px;
+        }
+        .github-all-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 28px;
+            background: #ffffff;
+            border: 1px solid #e0e0e6;
+            border-radius: 12px;
+            color: #0f0f12;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .github-all-btn:hover {
+            border-color: #0f0f12;
+            background: #f5f5f7;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(15, 15, 18, 0.08);
+        }
+        .github-all-btn i {
+            font-size: 1.25rem;
+            color: #0f0f12;
+        }
+        .github-all-btn .github-all-btn__arrow {
+            font-size: 0.9rem;
+            color: #8a8a94;
+            margin-inline-start: 4px;
+            transition: transform 0.2s;
+        }
+        .github-all-btn:hover .github-all-btn__arrow {
+            transform: translateX(3px);
+            color: #0f0f12;
+        }
+        html[dir="rtl"] .github-all-btn:hover .github-all-btn__arrow {
+            transform: translateX(-3px);
+        }
+
+        /* ===== Why Section ===== */
+        .why-section { margin-bottom: 110px; scroll-margin-top: 90px; }
+        .why-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 20px;
+        }
+        .why-card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 28px 24px;
+            border: 1px solid #eaeaef;
+            transition: all 0.25s ease;
+        }
+        .why-card:hover { border-color: #d5d5dc; transform: translateY(-3px); }
+        .why-icon {
+            width: 42px; height: 42px;
+            border-radius: 10px;
+            background: #f5f5f7;
+            color: #0f0f12;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.25rem;
+            margin-bottom: 18px;
+        }
+        .why-card h3 {
+            font-size: 1.02rem;
+            font-weight: 700;
+            color: #0f0f12;
+            margin-bottom: 8px;
+            letter-spacing: -0.2px;
+        }
+        .why-card p { font-size: 0.88rem; color: #5a5a64; line-height: 1.65; }
+
+        /* ===== CTA Section ===== */
+        .cta-section {
+            background: #0f0f12;
+            border-radius: 20px;
+            padding: 70px 40px;
+            text-align: center;
+            color: #ffffff;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        .cta-section::before {
+            content: "";
+            position: absolute;
+            top: -100px; left: 50%;
+            transform: translateX(-50%);
+            width: 500px; height: 300px;
+            background: radial-gradient(ellipse, rgba(120, 90, 255, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .cta-section h2 {
+            font-family: 'Ubuntu Sans', 'Noto Sans Arabic', 'Noto Sans JP', 'Noto Sans SC', 'Noto Sans Devanagari', sans-serif;
+            font-weight: 100;
+            font-size: 2.4rem;
+            margin-bottom: 14px;
+            letter-spacing: -0.5px;
+            position: relative;
+            z-index: 1;
+        }
+        .cta-section p {
+            color: #9a9aa3;
+            max-width: 500px;
+            margin: 0 auto 32px;
+            font-size: 1rem;
+            line-height: 1.7;
+            position: relative;
+            z-index: 1;
+        }
+        .cta-section .btn-primary {
+            background: #ffffff;
+            color: #0f0f12;
+            position: relative;
+            z-index: 1;
+            display: inline-flex !important;
+        }
+        .cta-section .btn-primary:hover { background: #e5e5e5; }
+
+        /* ===== Footer ===== */
+        .footer {
+            background-color: #111;
+            color: #bbb;
+            text-align: center;
+            padding: 28px 20px;
+            margin-top: 30px;
+            border-top: 1px solid #2a2a2a;
+            font-size: 0.95rem;
+        }
+
+        /* ===== Modals ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(6px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-content {
+            background: #ffffff;
+            border-radius: 16px;
+            max-width: 640px;
+            width: 100%;
+            padding: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            animation: modalFade 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        @keyframes modalFade {
+            from { opacity: 0; transform: scale(0.95) translateY(-10px); }
+            to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .modal-close {
+            position: absolute;
+            top: 12px; right: 12px;
+            background: #f3f4f6;
+            border: none;
+            border-radius: 50%;
+            width: 36px; height: 36px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: #374151;
+            z-index: 5;
+            transition: background 0.2s;
+        }
+        html[dir="rtl"] .modal-close { right: auto; left: 12px; }
+        .modal-close:hover { background: #e5e7eb; }
+
+        .reject-modal { text-align: center; padding: 32px 28px 26px; }
+        .reject-icon {
+            width: 76px; height: 76px;
+            border-radius: 50%;
+            background: #fee2e2;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 18px;
+            border: 3px solid #fecaca;
+        }
+        .reject-icon i { font-size: 2rem; color: #dc2626; }
+        .reject-title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+        .reject-subtitle { font-size: 0.92rem; color: #6b7280; margin-bottom: 22px; }
+        .reject-subtitle strong { color: var(--rid-green); }
+        .reject-detected {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            text-align: start;
+        }
+        .reject-detected-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .reject-detected-value {
+            font-family: monospace;
+            font-size: 0.88rem;
+            background: #fff;
+            padding: 6px 10px;
+            border-radius: 6px;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+            word-break: break-all;
+        }
+        .reject-note {
+            font-size: 0.82rem;
+            color: #9ca3af;
+            margin-bottom: 22px;
+            line-height: 1.5;
+        }
+        .reject-note i { color: var(--rid-blue); margin-inline-end: 4px; }
+        .reject-note a { color: var(--rid-green); text-decoration: none; font-weight: 600; }
+        .reject-note a:hover { text-decoration: underline; }
+        .reject-btn {
+            background: #374151;
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            padding: 12px 28px;
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+        .reject-btn:hover { background: #1f2937; }
+
+        /* Account Card */
+        .account-banner {
+            width: 100%; height: 160px;
+            border-radius: 12px;
+            background-size: cover;
+            background-position: center;
+            background-color: #e5e7eb;
+            margin-bottom: 16px;
+            border: 1px solid #e5e7eb;
+        }
+        .account-banner.no-banner {
+            --s: 80px;
+            --_g: #dc9d37 25%, #fed450 0 50%, #0000 0;
+            --_l1: #fff 0 1px, #0000 0 calc(25% - 1px), #fff 0 25%;
+            --_l2: #fff 0 1px, #0000 0 calc(50% - 1px), #fff 0 50%;
+            background: repeating-linear-gradient(45deg, var(--_l1)),
+                repeating-linear-gradient(-45deg, var(--_l1)),
+                repeating-linear-gradient(0deg, var(--_l2)),
+                repeating-linear-gradient(90deg, var(--_l2)),
+                conic-gradient(from 135deg at 25% 75%, var(--_g)),
+                conic-gradient(from 225deg at 25% 25%, var(--_g)),
+                conic-gradient(from 45deg at 75% 75%, var(--_g)),
+                conic-gradient(from -45deg at 75% 25%, var(--_g)),
+                repeating-conic-gradient(#125c65 0 45deg, #bc4a33 0 90deg);
+            background-size: var(--s) var(--s);
+        }
+        .account-avatar-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .account-avatar {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            background-color: #e5e7eb;
+            background-size: cover;
+            background-position: center;
+            border: 3px solid #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
+        }
+        .account-avatar i { font-size: 2.5rem; color: #9ca3af; }
+        .account-info h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+        .account-info .account-type {
+            font-size: 0.85rem;
+            color: var(--rid-green);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .account-info .account-id {
+            font-size: 0.85rem;
+            color: #6b7280;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 4px;
+        }
+        .account-details {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #e5e7eb;
+            font-size: 0.9rem;
+            color: #374151;
+        }
+        .account-details p { margin-bottom: 8px; }
+        .account-details strong { font-weight: 600; color: #111827; }
+        .account-empty { text-align: center; padding: 30px 0; color: #6b7280; }
+        .modal-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 20px;
+            justify-content: center;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 20px;
+        }
+        .modal-btn {
+            background: var(--rid-green);
+            border: none;
+            border-radius: 30px;
+            padding: 10px 24px;
+            color: white;
+            font-family: inherit;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+        .modal-btn:hover { background: #3d9e41; }
+        .modal-btn.danger { background: #e74c3c; }
+        .modal-btn.danger:hover { background: #c0392b; }
+
+        /* Map */
+        .map-section {
+            margin-top: 16px;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 16px;
+        }
+        .map-section-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .map-section-label i { color: var(--rid-green); }
+        .map-container {
+            height: 220px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+            position: relative;
+            background: #f9fafb;
+        }
+        .map-container .maplibregl-map { border-radius: 10px; }
+        .map-container iframe { width: 100%; height: 100%; border: 0; display: block; }
+        .map-fallback {
+            display: flex; align-items: center; justify-content: center;
+            height: 100%;
+            background: #f9fafb;
+            color: #6b7280;
+            font-size: 0.85rem;
+            flex-direction: column;
+            gap: 8px;
+            text-align: center;
+            padding: 16px;
+        }
+        .map-fallback i { font-size: 2rem; color: #d1d5db; }
+        .custom-marker {
+            width: 18px; height: 18px;
+            background: #b85050;
+            border: 3px solid #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .custom-marker:hover { transform: scale(1.3); }
+        .maplibregl-popup-content {
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            color: #1f2937;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
+        .maplibregl-popup-close-button { font-size: 1.2rem; padding: 4px 8px; color: #6b7280; }
+        .maplibregl-ctrl-attrib {
+            font-size: 0.65rem;
+            background: rgba(255, 255, 255, 0.8) !important;
+            backdrop-filter: blur(4px);
+            padding: 2px 6px;
+            border-radius: 4px 0 0 0;
+        }
+        .maplibregl-ctrl-bottom-right { bottom: 4px; right: 4px; }
+        .maplibregl-ctrl-group {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .top-bar { padding: 0 16px; height: 64px; }
+            .top-bar img { height: 34px; margin-right: 10px; }
+            .top-bar-title { font-size: 22px; }
+            .top-bar-nav { gap: 10px; }
+            .top-bar-nav a.nav-section-link { display: none !important; }
+            .lang-switcher__btn span:not(.flag) { display: none; }
+            .lang-switcher__btn { padding: 7px 9px; }
+        }
+
+        @media (max-width: 800px) {
+            .banner { padding: 70px 22px 80px; }
+            .banner-content h1 { font-size: 2.5rem; }
+            .banner-content p { font-size: 1rem; }
+            .container-main { padding: 60px 20px 40px; }
+            .section-title { font-size: 2rem; }
+            .products-grid { grid-template-columns: 1fr; }
+            .cta-section { padding: 50px 24px; }
+            .cta-section h2 { font-size: 1.8rem; }
+        }
+
+        @media (max-width: 600px) {
+            .modal-content { padding: 16px; max-width: 95vw; }
+            .map-container { height: 180px; }
+            .account-banner { height: 120px; }
+            .account-avatar { width: 60px; height: 60px; }
+            .account-info h3 { font-size: 1.2rem; }
+            .modal-actions { flex-direction: column; align-items: stretch; }
+            .modal-btn { justify-content: center; }
+            .reject-modal { padding: 24px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== Top Bar ===== -->
+    <header class="top-bar">
+        <div class="top-bar-left">
+            <img src="https://i.postimg.cc/LXvCQ5rt/swrh-restudio.png" alt="Restudio Logo" />
+            <span class="top-bar-title">Developers Hub</span>
+        </div>
+        <nav class="top-bar-nav">
+            <a href="#products" class="nav-section-link"><i class="ti ti-package"></i> <span data-i18n="nav.products">Products</span></a>
+            <a href="#why" class="nav-section-link"><i class="ti ti-sparkles"></i> <span data-i18n="nav.why">Why Restudio</span></a>
+
+            <div class="lang-switcher" id="langSwitcher">
+                <button class="lang-switcher__btn" onclick="toggleLangMenu(event)">
+                    <i class="ti ti-language"></i>
+                    <span class="flag" id="currentLangLabel">EN</span>
+                    <i class="ti ti-chevron-down" style="font-size: 0.7rem;"></i>
+                </button>
+                <div class="lang-switcher__menu">
+                    <button class="lang-switcher__item" data-lang="en" onclick="setLanguage('en')"><span class="lang-switcher__flag">EN</span> English</button>
+                    <button class="lang-switcher__item" data-lang="ar" onclick="setLanguage('ar')"><span class="lang-switcher__flag">AR</span> العربية</button>
+                    <button class="lang-switcher__item" data-lang="ja" onclick="setLanguage('ja')"><span class="lang-switcher__flag">JA</span> 日本語</button>
+                    <button class="lang-switcher__item" data-lang="zh" onclick="setLanguage('zh')"><span class="lang-switcher__flag">ZH</span> 中文</button>
+                    <button class="lang-switcher__item" data-lang="hi" onclick="setLanguage('hi')"><span class="lang-switcher__flag">HI</span> हिन्दी</button>
+                </div>
+            </div>
+
+            <button id="registerBtn" class="register-btn-new" onclick="triggerRestudioCard()">
+                <span class="register-btn-bg">
+                    <span class="register-btn-bg-layers">
+                        <span class="register-btn-bg-layer -layer1"></span>
+                        <span class="register-btn-bg-layer -layer2"></span>
+                        <span class="register-btn-bg-layer -layer3"></span>
+                    </span>
+                </span>
+                <span class="register-btn-inner">
+                    <span class="register-btn-inner-static">
+                        <i class="fas fa-id-card register-btn-icon"></i>
+                        <span class="register-btn-full-text" data-i18n="btn.register">Register via RestudioID</span>
+                        <span class="register-btn-short-text">RestudioID</span>
+                    </span>
+                    <span class="register-btn-inner-hover">
+                        <i class="fas fa-id-card register-btn-icon"></i>
+                        <span class="register-btn-full-text" data-i18n="btn.register">Register via RestudioID</span>
+                        <span class="register-btn-short-text">RestudioID</span>
+                    </span>
+                </span>
+            </button>
+
+            <div id="avatarNav" class="nav-avatar" style="display: none;" onclick="showProfileFromStorage()"></div>
+
+            <a href="mailto:restudiosupport@gmail.com" class="cta-small">
+                <i class="ti ti-headset"></i> <span data-i18n="nav.support">Support</span>
+            </a>
+        </nav>
+    </header>
+
+    <input type="file" id="restudioCardFileInput" accept=".json,application/json" style="display:none;" />
+
+    <!-- ===== Banner ===== -->
+    <section class="banner">
+        <div class="banner-content">
+            <div class="banner-badge">
+                <i class="ti ti-circle-check-filled"></i>
+                <span data-i18n="banner.badge">Part of Restudio Software Laboratories</span>
+            </div>
+            <h1 data-i18n-html="banner.title">Build with <span>Restudio</span></h1>
+            <p data-i18n="banner.subtitle">Professional tools, frameworks, and platforms crafted for developers, educators, and creators — all under one hub.</p>
+            <div class="banner-btns">
+                <a href="#products" class="btn btn-primary">
+                    <i class="ti ti-arrow-down"></i> <span data-i18n="btn.explore">Explore Products</span>
+                </a>
+                <a href="mailto:restudiosupport@gmail.com" class="btn btn-outline">
+                    <i class="ti ti-mail"></i> <span data-i18n="btn.contact">Contact Support</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Main Content ===== -->
+    <main class="container-main" id="mainContent">
+
+        <section class="products-section" id="products">
+            <div class="section-header">
+                <span class="section-eyebrow" data-i18n="products.eyebrow">Our Products</span>
+                <h2 class="section-title" data-i18n="products.title">Built for developers</h2>
+                <p class="section-subtitle" data-i18n="products.subtitle">A growing ecosystem of professional software — from code editors to game frameworks and educational tools.</p>
+            </div>
+
+            <!-- ===== Developer Tools ===== -->
+            <h3 class="subsection-title">
+                <i class="ti ti-code"></i>
+                <span data-i18n="products.group.devtools">Developer Tools</span>
+            </h3>
+
+            <div class="products-grid">
+
+                <div class="product-card accent-blue">
+                    <div class="product-head">
+                        <div class="product-icon"><i class="ti ti-code"></i></div>
+                        <span class="product-tag" data-i18n="p1.tag">Institutional</span>
+                    </div>
+                    <div class="product-name" data-i18n="p1.name">Restudio Script Editor</div>
+                    <div class="product-version" data-i18n="p1.version">Institutional Version</div>
+                    <p class="product-description" data-i18n="p1.desc">Professional-grade code editor designed for institutions, universities, and enterprise teams. Built for large-scale scripting environments.</p>
+                    <div class="product-footer">
+                        <div class="product-price">
+                            <span data-i18n="p1.priceLabel">Status</span>
+                            <strong data-i18n="p1.priceValue">Closed except by permission</strong>
+                        </div>
+                        <a href="mailto:restudiosupport@gmail.com?subject=Restudio%20Script%20Editor%20Permission%20Request" class="product-btn">
+                            <span data-i18n="p1.cta">Request</span> <i class="ti ti-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="product-card accent-teal">
+                    <div class="product-head">
+                        <div class="product-icon"><i class="ti ti-box"></i></div>
+                        <span class="product-tag" data-i18n="p2.tag">Open Source</span>
+                    </div>
+                    <div class="product-name" data-i18n="p2.name">Wetbox Framework</div>
+                    <div class="product-version" data-i18n="p2.version">Game Development</div>
+                    <p class="product-description" data-i18n="p2.desc">A no-compromise game development framework for developers who demand full transparency and complete control over their tech stack.</p>
+                    <div class="product-footer">
+                        <div class="product-price">
+                            <span data-i18n="p2.priceLabel">Free</span>
+                            <strong data-i18n="p2.priceValue">Open Source</strong>
+                        </div>
+                        <a href="https://github.com/RestudioSoftwareLaboratories/wetbox-website/releases/tag/download-wetbox!" target="_blank" rel="noopener noreferrer" class="product-btn">
+                            <span data-i18n="p2.cta">Download</span> <i class="ti ti-download"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ===== Education Suite ===== -->
+            <h3 class="subsection-title" style="margin-top: 56px;">
+                <i class="ti ti-school"></i>
+                <span data-i18n="products.group.education">For Educators</span>
+            </h3>
+
+            <div class="products-grid">
+
+                <!-- Restudio Math -->
+                <div class="product-card accent-amber">
+                    <div class="product-head">
+                        <div class="product-icon"><i class="ti ti-math-function"></i></div>
+                        <span class="product-tag" data-i18n="p3.tag">Education</span>
+                    </div>
+                    <div class="product-name" data-i18n="p3.name">Restudio Math</div>
+                    <div class="product-version" data-i18n="p3.version">Learning Platform</div>
+                    <p class="product-description" data-i18n="p3.desc">Restudio Math is a LaTeX-powered equation editor that renders mathematical notation beautifully in real time. The app title appears in lowercase — math — for a clean, modern look.</p>
+                    <div class="product-footer">
+                        <div class="product-price">
+                            <span data-i18n="p3.priceLabel">Status</span>
+                            <strong data-i18n="p3.priceValue">Live</strong>
+                        </div>
+                        <a href="https://restudiosoftwarelaboratories.github.io/Restudio-Math/" target="_blank" rel="noopener noreferrer" class="product-btn">
+                            <span data-i18n="p3.cta">Open</span> <i class="ti ti-external-link"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Restudio Forms -->
+                <div class="product-card accent-purple">
+                    <div class="product-head">
+                        <div class="product-icon"><i class="ti ti-forms"></i></div>
+                        <span class="product-tag" data-i18n="p4.tag">Education</span>
+                    </div>
+                    <div class="product-name" data-i18n="p4.name">Restudio Forms</div>
+                    <div class="product-version" data-i18n="p4.version">For Educators</div>
+                    <p class="product-description" data-i18n="p4.desc">Restudio Forms is a dynamic form builder. You write a title and description, add questions from the sidebar, and style the whole form with a theme color and a font family.</p>
+                    <div class="product-footer">
+                        <div class="product-price">
+                            <span data-i18n="p4.priceLabel">Status</span>
+                            <strong data-i18n="p4.priceValue">Live</strong>
+                        </div>
+                        <a href="https://restudiosoftwarelaboratories.github.io/Restudio-Forms/" target="_blank" rel="noopener noreferrer" class="product-btn">
+                            <span data-i18n="p4.cta">Open</span> <i class="ti ti-external-link"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Restudio Presentation -->
+                <div class="product-card accent-rose">
+                    <div class="product-head">
+                        <div class="product-icon"><i class="ti ti-presentation"></i></div>
+                        <span class="product-tag" data-i18n="p5.tag">Education</span>
+                    </div>
+                    <div class="product-name" data-i18n="p5.name">Restudio Presentation</div>
+                    <div class="product-version" data-i18n="p5.version">For Educators</div>
+                    <p class="product-description" data-i18n="p5.desc">Restudio Presentation is a browser-based presentation editor for building interactive slide decks. Add text, images, shapes, and QR codes; style them; animate them; then present in preview mode.</p>
+                    <div class="product-footer">
+                        <div class="product-price">
+                            <span data-i18n="p5.priceLabel">Status</span>
+                            <strong data-i18n="p5.priceValue">Live</strong>
+                        </div>
+                        <a href="https://restudiosoftwarelaboratories.github.io/Restudio-Presentation/" target="_blank" rel="noopener noreferrer" class="product-btn">
+                            <span data-i18n="p5.cta">Open</span> <i class="ti ti-external-link"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Restudio Documents -->
+                <div class="product-card accent-cyan">
+                    <div class="product-head">
+                        <div class="product-icon"><i class="ti ti-file-text"></i></div>
+                        <span class="product-tag" data-i18n="p6.tag">Education</span>
+                    </div>
+                    <div class="product-name" data-i18n="p6.name">Restudio Documents</div>
+                    <div class="product-version" data-i18n="p6.version">For Educators</div>
+                    <p class="product-description" data-i18n="p6.desc">Restudio Documents is a browser-based document editor with a toolbar closely mirroring Restudio Presentation — so the learning curve is nearly flat if you already know the other app.</p>
+                    <div class="product-footer">
+                        <div class="product-price">
+                            <span data-i18n="p6.priceLabel">Status</span>
+                            <strong data-i18n="p6.priceValue">Live</strong>
+                        </div>
+                        <a href="https://restudiosoftwarelaboratories.github.io/Restudio-Documents/" target="_blank" rel="noopener noreferrer" class="product-btn">
+                            <span data-i18n="p6.cta">Open</span> <i class="ti ti-external-link"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- ⭐ Restudio Tables -->
+                <div class="product-card accent-indigo">
+                    <div class="product-head">
+                        <div class="product-icon"><i class="ti ti-table"></i></div>
+                        <span class="product-tag" data-i18n="p7.tag">Education</span>
+                    </div>
+                    <div class="product-name" data-i18n="p7.name">Restudio Tables</div>
+                    <div class="product-version" data-i18n="p7.version">For Educators</div>
+                    <p class="product-description" data-i18n="p7.desc">Restudio Tables is a spreadsheet-style editor for organising rows and columns of data — with typing, sorting, filtering, merging, and color tools. The default grid is 7 columns (A–G) × 12 rows = 84 cells.</p>
+                    <div class="product-footer">
+                        <div class="product-price">
+                            <span data-i18n="p7.priceLabel">Status</span>
+                            <strong data-i18n="p7.priceValue">Live</strong>
+                        </div>
+                        <a href="https://restudiosoftwarelaboratories.github.io/Restudio-Tables/" target="_blank" rel="noopener noreferrer" class="product-btn">
+                            <span data-i18n="p7.cta">Open</span> <i class="ti ti-external-link"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- View all sources -->
+            <div class="github-all-btn-wrapper">
+                <a href="https://github.com/RestudioSoftwareLaboratories" target="_blank" rel="noopener noreferrer" class="github-all-btn">
+                    <i class="ti ti-brand-github"></i>
+                    <span data-i18n="products.githubAll">View all sources from GitHub</span>
+                    <i class="ti ti-arrow-right github-all-btn__arrow"></i>
+                </a>
+            </div>
+
+        </section>
+
+        <!-- ===== Why Section ===== -->
+        <section class="why-section" id="why">
+            <div class="section-header">
+                <span class="section-eyebrow" data-i18n="why.eyebrow">Principles</span>
+                <h2 class="section-title" data-i18n="why.title">Why Restudio</h2>
+                <p class="section-subtitle" data-i18n="why.subtitle">Every product under Restudio Software Laboratories shares the same core principles.</p>
+            </div>
+
+            <div class="why-grid">
+                <div class="why-card">
+                    <div class="why-icon"><i class="ti ti-eye"></i></div>
+                    <h3 data-i18n="why.c1.title">Full Transparency</h3>
+                    <p data-i18n="why.c1.desc">No hidden libraries, no black boxes. You always know exactly what runs inside your tools.</p>
+                </div>
+                <div class="why-card">
+                    <div class="why-icon"><i class="ti ti-bolt"></i></div>
+                    <h3 data-i18n="why.c2.title">Real Performance</h3>
+                    <p data-i18n="why.c2.desc">Lightweight architecture focused on speed, efficiency, and minimal overhead.</p>
+                </div>
+                <div class="why-card">
+                    <div class="why-icon"><i class="ti ti-plug"></i></div>
+                    <h3 data-i18n="why.c3.title">Flexible Integration</h3>
+                    <p data-i18n="why.c3.desc">Bring your own stack. Our products adapt to your workflow — not the other way around.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <h2 data-i18n="cta.title">Ready to build with Restudio?</h2>
+            <p data-i18n="cta.subtitle">We are ready to support you!</p>
+            <a href="mailto:restudiosupport@gmail.com" class="btn btn-primary">
+                <i class="ti ti-mail"></i> <span data-i18n="btn.contact">Contact Support</span>
+            </a>
+        </section>
+
+    </main>
+
+    <footer class="footer">
+        <p data-i18n="footer.copy">Part of RSL (Restudio Software Laboratories) — © 2026 All rights reserved.</p>
+    </footer>
+
+    <div id="restudioAccountModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeRestudioModal()">&times;</button>
+            <div id="restudioAccountDetails"></div>
+        </div>
+    </div>
+
+    <div id="restudioRejectModal" class="modal-overlay">
+        <div class="modal-content reject-modal">
+            <button class="modal-close" onclick="closeRejectModal()">&times;</button>
+            <div class="reject-icon"><i class="fas fa-shield-halved"></i></div>
+            <h2 class="reject-title" data-i18n="reject.title">Access Restricted</h2>
+            <p class="reject-subtitle" data-i18n-html="reject.subtitle">RestudioID currently accepts <strong>Developer accounts only</strong>.</p>
+            <div class="reject-detected">
+                <span class="reject-detected-label" data-i18n="reject.detected">Detected account type</span>
+                <span class="reject-detected-value" id="rejectAccountType">—</span>
+            </div>
+            <p class="reject-note" data-i18n-html="reject.note">
+                <i class="fas fa-circle-info"></i>
+                If you are a developer and believe this is a mistake, contact
+                <a href="mailto:restudiosupport@gmail.com">Restudio Support</a>.
+            </p>
+            <button class="reject-btn" onclick="closeRejectModal()">
+                <i class="fas fa-check"></i> <span data-i18n="reject.btn">Got it</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        /* ============================================================
+           TRANSLATIONS
+           ============================================================ */
+        const TRANSLATIONS = {
+            en: {
+                "page.title": "Restudio Developers Hub",
+                "nav.products": "Products", "nav.why": "Why Restudio", "nav.support": "Support",
+                "btn.register": "Register via RestudioID", "btn.explore": "Explore Products", "btn.contact": "Contact Support",
+                "banner.badge": "Part of Restudio Software Laboratories",
+                "banner.title": "Build with <span>Restudio</span>",
+                "banner.subtitle": "Professional tools, frameworks, and platforms crafted for developers, educators, and creators — all under one hub.",
+                "products.eyebrow": "Our Products", "products.title": "Built for developers",
+                "products.subtitle": "A growing ecosystem of professional software — from code editors to game frameworks and educational tools.",
+                "products.group.devtools": "Developer Tools",
+                "products.group.education": "For Educators",
+                "products.githubAll": "View all sources from GitHub",
+                "p1.tag": "Institutional", "p1.name": "Restudio Script Editor", "p1.version": "Institutional Version",
+                "p1.desc": "Professional-grade code editor designed for institutions, universities, and enterprise teams. Built for large-scale scripting environments.",
+                "p1.priceLabel": "Status", "p1.priceValue": "Closed except by permission", "p1.cta": "Request",
+                "p2.tag": "Open Source", "p2.name": "Wetbox Framework", "p2.version": "Game Development",
+                "p2.desc": "A no-compromise game development framework for developers who demand full transparency and complete control over their tech stack.",
+                "p2.priceLabel": "Free", "p2.priceValue": "Open Source", "p2.cta": "Download",
+                "p3.tag": "Education", "p3.name": "Restudio Math", "p3.version": "Learning Platform",
+                "p3.desc": "Restudio Math is a LaTeX-powered equation editor that renders mathematical notation beautifully in real time. The app title appears in lowercase — math — for a clean, modern look.",
+                "p3.priceLabel": "Status", "p3.priceValue": "Live", "p3.cta": "Open",
+                "p4.tag": "Education", "p4.name": "Restudio Forms", "p4.version": "For Educators",
+                "p4.desc": "Restudio Forms is a dynamic form builder. You write a title and description, add questions from the sidebar, and style the whole form with a theme color and a font family.",
+                "p4.priceLabel": "Status", "p4.priceValue": "Live", "p4.cta": "Open",
+                "p5.tag": "Education", "p5.name": "Restudio Presentation", "p5.version": "For Educators",
+                "p5.desc": "Restudio Presentation is a browser-based presentation editor for building interactive slide decks. Add text, images, shapes, and QR codes; style them; animate them; then present in preview mode.",
+                "p5.priceLabel": "Status", "p5.priceValue": "Live", "p5.cta": "Open",
+                "p6.tag": "Education", "p6.name": "Restudio Documents", "p6.version": "For Educators",
+                "p6.desc": "Restudio Documents is a browser-based document editor with a toolbar closely mirroring Restudio Presentation — so the learning curve is nearly flat if you already know the other app.",
+                "p6.priceLabel": "Status", "p6.priceValue": "Live", "p6.cta": "Open",
+                "p7.tag": "Education", "p7.name": "Restudio Tables", "p7.version": "For Educators",
+                "p7.desc": "Restudio Tables is a spreadsheet-style editor for organising rows and columns of data — with typing, sorting, filtering, merging, and color tools. The default grid is 7 columns (A–G) × 12 rows = 84 cells.",
+                "p7.priceLabel": "Status", "p7.priceValue": "Live", "p7.cta": "Open",
+                "why.eyebrow": "Principles", "why.title": "Why Restudio",
+                "why.subtitle": "Every product under Restudio Software Laboratories shares the same core principles.",
+                "why.c1.title": "Full Transparency", "why.c1.desc": "No hidden libraries, no black boxes. You always know exactly what runs inside your tools.",
+                "why.c2.title": "Real Performance", "why.c2.desc": "Lightweight architecture focused on speed, efficiency, and minimal overhead.",
+                "why.c3.title": "Flexible Integration", "why.c3.desc": "Bring your own stack. Our products adapt to your workflow — not the other way around.",
+                "cta.title": "Ready to build with Restudio?",
+                "cta.subtitle": "We are ready to support you!",
+                "footer.copy": "Part of RSL (Restudio Software Laboratories) — © 2026 All rights reserved.",
+                "reject.title": "Access Restricted",
+                "reject.subtitle": "RestudioID currently accepts <strong>Developer accounts only</strong>.",
+                "reject.detected": "Detected account type",
+                "reject.note": "<i class=\"fas fa-circle-info\"></i> If you are a developer and believe this is a mistake, contact <a href=\"mailto:restudiosupport@gmail.com\">Restudio Support</a>.",
+                "reject.btn": "Got it"
+            },
+            ar: {
+                "page.title": "مركز مطوّري رستوديو",
+                "nav.products": "المنتجات", "nav.why": "لماذا رستوديو", "nav.support": "الدعم",
+                "btn.register": "التسجيل عبر RestudioID", "btn.explore": "استكشف المنتجات", "btn.contact": "تواصل مع الدعم",
+                "banner.badge": "جزء من مختبرات رستوديو للبرمجيات",
+                "banner.title": "ابنِ مع <span>رستوديو</span>",
+                "banner.subtitle": "أدوات احترافية وأطر عمل ومنصات مصممة للمطورين والمعلمين والمبدعين — كل ذلك في مكان واحد.",
+                "products.eyebrow": "منتجاتنا", "products.title": "مصمم للمطورين",
+                "products.subtitle": "نظام بيئي متنامٍ من البرمجيات الاحترافية — من محررات الأكواد إلى أطر تطوير الألعاب والأدوات التعليمية.",
+                "products.group.devtools": "أدوات المطورين",
+                "products.group.education": "للمعلمين",
+                "products.githubAll": "عرض جميع المصادر من GitHub",
+                "p1.tag": "مؤسسي", "p1.name": "محرر رستوديو للسكربتات", "p1.version": "الإصدار المؤسسي",
+                "p1.desc": "محرر أكواد احترافي مصمم للمؤسسات والجامعات وفرق الشركات. مبني لبيئات البرمجة واسعة النطاق.",
+                "p1.priceLabel": "الحالة", "p1.priceValue": "مغلق إلا باستئذان", "p1.cta": "اطلب",
+                "p2.tag": "مفتوح المصدر", "p2.name": "إطار Wetbox", "p2.version": "تطوير الألعاب",
+                "p2.desc": "إطار عمل لتطوير الألعاب بدون تنازلات، للمطورين الذين يطلبون شفافية كاملة وتحكماً تاماً في حزمة تقنياتهم.",
+                "p2.priceLabel": "مجاني", "p2.priceValue": "مفتوح المصدر", "p2.cta": "تحميل",
+                "p3.tag": "تعليمي", "p3.name": "رستوديو ماث", "p3.version": "منصة تعليمية",
+                "p3.desc": "رستوديو ماث هو محرر معادلات مدعوم بـ LaTeX يعرض الرموز الرياضية بشكل جميل وفي الوقت الفعلي. يظهر عنوان التطبيق بأحرف صغيرة — math — لمظهر نظيف وعصري.",
+                "p3.priceLabel": "الحالة", "p3.priceValue": "متاح", "p3.cta": "افتح",
+                "p4.tag": "تعليمي", "p4.name": "رستوديو فورمز", "p4.version": "للمعلمين",
+                "p4.desc": "رستوديو فورمز هو منشئ نماذج ديناميكي. تكتب عنواناً ووصفاً، وتضيف أسئلة من الشريط الجانبي، وتنسّق النموذج بالكامل بلون سمة وعائلة خطوط.",
+                "p4.priceLabel": "الحالة", "p4.priceValue": "متاح", "p4.cta": "افتح",
+                "p5.tag": "تعليمي", "p5.name": "رستوديو بريزنتيشن", "p5.version": "للمعلمين",
+                "p5.desc": "رستوديو بريزنتيشن هو محرر عروض تقديمية يعمل في المتصفح لبناء شرائح تفاعلية. أضف نصوصاً وصوراً وأشكالاً ورموز QR؛ ونسّقها؛ وحرّكها؛ ثم اعرضها في وضع المعاينة.",
+                "p5.priceLabel": "الحالة", "p5.priceValue": "متاح", "p5.cta": "افتح",
+                "p6.tag": "تعليمي", "p6.name": "رستوديو دوكيومنتس", "p6.version": "للمعلمين",
+                "p6.desc": "رستوديو دوكيومنتس هو محرر مستندات يعمل في المتصفح، بشريط أدوات يشبه إلى حد كبير رستوديو بريزنتيشن — لذا يكون منحنى التعلم شبه مسطح إذا كنت تعرف التطبيق الآخر.",
+                "p6.priceLabel": "الحالة", "p6.priceValue": "متاح", "p6.cta": "افتح",
+                "p7.tag": "تعليمي", "p7.name": "رستوديو تيبلز", "p7.version": "للمعلمين",
+                "p7.desc": "رستوديو تيبلز هو محرر بنمط جداول البيانات لتنظيم صفوف وأعمدة البيانات — مع أدوات الكتابة والفرز والتصفية والدمج والألوان. الشبكة الافتراضية هي 7 أعمدة (A–G) × 12 صفاً = 84 خلية.",
+                "p7.priceLabel": "الحالة", "p7.priceValue": "متاح", "p7.cta": "افتح",
+                "why.eyebrow": "المبادئ", "why.title": "لماذا رستوديو",
+                "why.subtitle": "كل منتج تحت مختبرات رستوديو للبرمجيات يشارك نفس المبادئ الأساسية.",
+                "why.c1.title": "شفافية كاملة", "why.c1.desc": "لا مكتبات خفية ولا صناديق سوداء. تعرف دائماً بالضبط ما يعمل داخل أدواتك.",
+                "why.c2.title": "أداء حقيقي", "why.c2.desc": "بنية خفيفة تركز على السرعة والكفاءة والحد الأدنى من العبء.",
+                "why.c3.title": "تكامل مرن", "why.c3.desc": "أحضر حزمتك الخاصة. منتجاتنا تتكيف مع سير عملك — وليس العكس.",
+                "cta.title": "جاهز للبناء مع رستوديو؟",
+                "cta.subtitle": "نحن مستعدون لدعمك!",
+                "footer.copy": "جزء من RSL (مختبرات رستوديو للبرمجيات) — © 2026 جميع الحقوق محفوظة.",
+                "reject.title": "الوصول مقيّد",
+                "reject.subtitle": "RestudioID يقبل حالياً <strong>حسابات المطورين فقط</strong>.",
+                "reject.detected": "نوع الحساب المكتشف",
+                "reject.note": "<i class=\"fas fa-circle-info\"></i> إذا كنت مطوراً وتعتقد أن هذا خطأ، تواصل مع <a href=\"mailto:restudiosupport@gmail.com\">دعم رستوديو</a>.",
+                "reject.btn": "فهمت"
+            },
+            ja: {
+                "page.title": "Restudio 開発者ハブ",
+                "nav.products": "製品", "nav.why": "Restudioを選ぶ理由", "nav.support": "サポート",
+                "btn.register": "RestudioIDで登録", "btn.explore": "製品を見る", "btn.contact": "サポートに連絡",
+                "banner.badge": "Restudio Software Laboratoriesの一部",
+                "banner.title": "<span>Restudio</span>で構築",
+                "banner.subtitle": "開発者、教育者、クリエイターのために作られたプロフェッショナルなツール、フレームワーク、プラットフォーム。",
+                "products.eyebrow": "私たちの製品", "products.title": "開発者向けに構築",
+                "products.subtitle": "コードエディタからゲームフレームワーク、教育ツールまで、成長するプロフェッショナルソフトウェアのエコシステム。",
+                "products.group.devtools": "開発者ツール",
+                "products.group.education": "教育者向け",
+                "products.githubAll": "GitHubですべてのソースを見る",
+                "p1.tag": "機関向け", "p1.name": "Restudio スクリプトエディタ", "p1.version": "機関向けバージョン",
+                "p1.desc": "教育機関、大学、企業チーム向けに設計されたプロフェッショナルグレードのコードエディタ。大規模なスクリプト環境向けに構築されています。",
+                "p1.priceLabel": "状態", "p1.priceValue": "許可制で閉鎖中", "p1.cta": "リクエスト",
+                "p2.tag": "オープンソース", "p2.name": "Wetbox フレームワーク", "p2.version": "ゲーム開発",
+                "p2.desc": "完全な透明性とテックスタックの完全な制御を求める開発者のための、妥協のないゲーム開発フレームワーク。",
+                "p2.priceLabel": "無料", "p2.priceValue": "オープンソース", "p2.cta": "ダウンロード",
+                "p3.tag": "教育", "p3.name": "Restudio 数学", "p3.version": "学習プラットフォーム",
+                "p3.desc": "Restudio Mathは、数式表記をリアルタイムで美しくレンダリングするLaTeX搭載の方程式エディタです。アプリタイトルは小文字 — math — で表示され、クリーンでモダンな印象を与えます。",
+                "p3.priceLabel": "状態", "p3.priceValue": "公開中", "p3.cta": "開く",
+                "p4.tag": "教育", "p4.name": "Restudio フォーム", "p4.version": "教育者向け",
+                "p4.desc": "Restudio Formsは動的なフォームビルダーです。タイトルと説明を書き、サイドバーから質問を追加し、テーマカラーとフォントファミリーでフォーム全体をスタイリングします。",
+                "p4.priceLabel": "状態", "p4.priceValue": "公開中", "p4.cta": "開く",
+                "p5.tag": "教育", "p5.name": "Restudio プレゼンテーション", "p5.version": "教育者向け",
+                "p5.desc": "Restudio Presentationは、インタラクティブなスライドデッキを構築するためのブラウザベースのプレゼンテーションエディタです。テキスト、画像、図形、QRコードを追加し、スタイリングし、アニメーション化し、プレビューモードで発表します。",
+                "p5.priceLabel": "状態", "p5.priceValue": "公開中", "p5.cta": "開く",
+                "p6.tag": "教育", "p6.name": "Restudio ドキュメント", "p6.version": "教育者向け",
+                "p6.desc": "Restudio Documentsは、Restudio Presentationとほぼ同じツールバーを備えたブラウザベースのドキュメントエディタです — すでに他のアプリを知っていれば、学習曲線はほぼ平坦です。",
+                "p6.priceLabel": "状態", "p6.priceValue": "公開中", "p6.cta": "開く",
+                "p7.tag": "教育", "p7.name": "Restudio テーブル", "p7.version": "教育者向け",
+                "p7.desc": "Restudio Tablesは、データの行と列を整理するためのスプレッドシート形式のエディタです — 入力、並べ替え、フィルタリング、結合、色ツールを備えています。デフォルトのグリッドは7列（A–G）× 12行 = 84セルです。",
+                "p7.priceLabel": "状態", "p7.priceValue": "公開中", "p7.cta": "開く",
+                "why.eyebrow": "原則", "why.title": "Restudioを選ぶ理由",
+                "why.subtitle": "Restudio Software Laboratoriesのすべての製品は同じコア原則を共有しています。",
+                "why.c1.title": "完全な透明性", "why.c1.desc": "隠されたライブラリもブラックボックスもありません。ツール内で何が動いているか常に正確にわかります。",
+                "why.c2.title": "真のパフォーマンス", "why.c2.desc": "速度、効率、最小限のオーバーヘッドに焦点を当てた軽量アーキテクチャ。",
+                "why.c3.title": "柔軟な統合", "why.c3.desc": "独自のスタックを持ち込んでください。私たちの製品はあなたのワークフローに適応します。",
+                "cta.title": "Restudioで構築する準備はできましたか？",
+                "cta.subtitle": "私たちはあなたをサポートする準備ができています！",
+                "footer.copy": "RSLの一部 (Restudio Software Laboratories) — © 2026 All rights reserved.",
+                "reject.title": "アクセス制限",
+                "reject.subtitle": "RestudioIDは現在、<strong>開発者アカウントのみ</strong>を受け付けています。",
+                "reject.detected": "検出されたアカウントタイプ",
+                "reject.note": "<i class=\"fas fa-circle-info\"></i> 開発者でこれが間違いだと思われる場合は、<a href=\"mailto:restudiosupport@gmail.com\">Restudio サポート</a>までご連絡ください。",
+                "reject.btn": "了解"
+            },
+            zh: {
+                "page.title": "Restudio 开发者中心",
+                "nav.products": "产品", "nav.why": "为什么选择 Restudio", "nav.support": "支持",
+                "btn.register": "通过 RestudioID 注册", "btn.explore": "探索产品", "btn.contact": "联系支持",
+                "banner.badge": "Restudio Software Laboratories 旗下",
+                "banner.title": "与 <span>Restudio</span> 一起构建",
+                "banner.subtitle": "为开发者、教育工作者和创作者打造的专业工具、框架和平台。",
+                "products.eyebrow": "我们的产品", "products.title": "为开发者打造",
+                "products.subtitle": "不断发展的专业软件生态系统 — 从代码编辑器到游戏框架和教育工具。",
+                "products.group.devtools": "开发者工具",
+                "products.group.education": "面向教育工作者",
+                "products.githubAll": "从 GitHub 查看所有源代码",
+                "p1.tag": "机构版", "p1.name": "Restudio 脚本编辑器", "p1.version": "机构版",
+                "p1.desc": "为机构、大学和企业团队设计的专业级代码编辑器。专为大规模脚本环境打造。",
+                "p1.priceLabel": "状态", "p1.priceValue": "仅限许可访问", "p1.cta": "申请",
+                "p2.tag": "开源", "p2.name": "Wetbox 框架", "p2.version": "游戏开发",
+                "p2.desc": "为要求完全透明和完全控制技术栈的开发者提供的无妥协游戏开发框架。",
+                "p2.priceLabel": "免费", "p2.priceValue": "开源", "p2.cta": "下载",
+                "p3.tag": "教育", "p3.name": "Restudio 数学", "p3.version": "学习平台",
+                "p3.desc": "Restudio Math 是一款由 LaTeX 驱动的方程编辑器，可实时精美地渲染数学符号。应用标题以小写形式显示 — math — 呈现简洁现代的外观。",
+                "p3.priceLabel": "状态", "p3.priceValue": "在线", "p3.cta": "打开",
+                "p4.tag": "教育", "p4.name": "Restudio 表单", "p4.version": "面向教育工作者",
+                "p4.desc": "Restudio Forms 是一款动态表单构建器。你编写标题和描述，从侧边栏添加问题，并用主题颜色和字体系列设计整个表单。",
+                "p4.priceLabel": "状态", "p4.priceValue": "在线", "p4.cta": "打开",
+                "p5.tag": "教育", "p5.name": "Restudio 演示", "p5.version": "面向教育工作者",
+                "p5.desc": "Restudio Presentation 是一款基于浏览器的演示编辑器，用于构建交互式幻灯片。添加文本、图像、形状和 QR 码；进行样式设计；制作动画；然后在预览模式中演示。",
+                "p5.priceLabel": "状态", "p5.priceValue": "在线", "p5.cta": "打开",
+                "p6.tag": "教育", "p6.name": "Restudio 文档", "p6.version": "面向教育工作者",
+                "p6.desc": "Restudio Documents 是一款基于浏览器的文档编辑器，其工具栏与 Restudio Presentation 几乎相同 — 因此如果你已经熟悉另一个应用，学习曲线几乎平坦。",
+                "p6.priceLabel": "状态", "p6.priceValue": "在线", "p6.cta": "打开",
+                "p7.tag": "教育", "p7.name": "Restudio 表格", "p7.version": "面向教育工作者",
+                "p7.desc": "Restudio Tables 是一款电子表格式编辑器，用于组织数据行和列 — 具备输入、排序、筛选、合并和颜色工具。默认网格为 7 列（A–G）× 12 行 = 84 个单元格。",
+                "p7.priceLabel": "状态", "p7.priceValue": "在线", "p7.cta": "打开",
+                "why.eyebrow": "原则", "why.title": "为什么选择 Restudio",
+                "why.subtitle": "Restudio Software Laboratories 旗下的每款产品都共享相同的核心原则。",
+                "why.c1.title": "完全透明", "why.c1.desc": "没有隐藏的库，没有黑匣子。你始终准确知道工具内部运行什么。",
+                "why.c2.title": "真实性能", "why.c2.desc": "专注于速度、效率和最小开销的轻量级架构。",
+                "why.c3.title": "灵活集成", "why.c3.desc": "自带技术栈。我们的产品适应你的工作流程——而不是相反。",
+                "cta.title": "准备好与 Restudio 一起构建了吗？",
+                "cta.subtitle": "我们随时准备为您提供支持！",
+                "footer.copy": "RSL（Restudio Software Laboratories）的一部分 — © 2026 版权所有。",
+                "reject.title": "访问受限",
+                "reject.subtitle": "RestudioID 目前仅接受<strong>开发者账户</strong>。",
+                "reject.detected": "检测到的账户类型",
+                "reject.note": "<i class=\"fas fa-circle-info\"></i> 如果你是开发者并认为这是错误，请联系<a href=\"mailto:restudiosupport@gmail.com\">Restudio 支持</a>。",
+                "reject.btn": "知道了"
+            },
+            hi: {
+                "page.title": "Restudio डेवलपर्स हब",
+                "nav.products": "उत्पाद", "nav.why": "Restudio क्यों", "nav.support": "सहायता",
+                "btn.register": "RestudioID के माध्यम से पंजीकरण करें", "btn.explore": "उत्पाद देखें", "btn.contact": "सहायता से संपर्क करें",
+                "banner.badge": "Restudio Software Laboratories का हिस्सा",
+                "banner.title": "<span>Restudio</span> के साथ बनाएं",
+                "banner.subtitle": "डेवलपर्स, शिक्षकों और रचनाकारों के लिए बनाए गए पेशेवर उपकरण, फ्रेमवर्क और प्लेटफॉर्म।",
+                "products.eyebrow": "हमारे उत्पाद", "products.title": "डेवलपर्स के लिए बनाया गया",
+                "products.subtitle": "पेशेवर सॉफ़्टवेयर का एक बढ़ता हुआ पारिस्थितिकी तंत्र — कोड एडिटर से लेकर गेम फ्रेमवर्क और शैक्षिक उपकरणों तक।",
+                "products.group.devtools": "डेवलपर टूल",
+                "products.group.education": "शिक्षकों के लिए",
+                "products.githubAll": "GitHub से सभी स्रोत देखें",
+                "p1.tag": "संस्थागत", "p1.name": "Restudio स्क्रिप्ट एडिटर", "p1.version": "संस्थागत संस्करण",
+                "p1.desc": "संस्थानों, विश्वविद्यालयों और उद्यम टीमों के लिए डिज़ाइन किया गया पेशेवर-ग्रेड कोड एडिटर। बड़े पैमाने के स्क्रिप्टिंग वातावरण के लिए बनाया गया।",
+                "p1.priceLabel": "स्थिति", "p1.priceValue": "अनुमति के बिना बंद", "p1.cta": "अनुरोध करें",
+                "p2.tag": "ओपन सोर्स", "p2.name": "Wetbox फ्रेमवर्क", "p2.version": "गेम डेवलपमेंट",
+                "p2.desc": "उन डेवलपर्स के लिए बिना समझौते का गेम डेवलपमेंट फ्रेमवर्क जो पूर्ण पारदर्शिता और अपने टेक स्टैक पर पूर्ण नियंत्रण चाहते हैं।",
+                "p2.priceLabel": "मुफ़्त", "p2.priceValue": "ओपन सोर्स", "p2.cta": "डाउनलोड",
+                "p3.tag": "शिक्षा", "p3.name": "Restudio गणित", "p3.version": "लर्निंग प्लेटफॉर्म",
+                "p3.desc": "Restudio Math एक LaTeX-संचालित समीकरण संपादक है जो गणितीय संकेतन को वास्तविक समय में सुंदर ढंग से प्रस्तुत करता है। ऐप का शीर्षक लोअरकेस में दिखाई देता है — math — एक साफ़, आधुनिक लुक के लिए।",
+                "p3.priceLabel": "स्थिति", "p3.priceValue": "लाइव", "p3.cta": "खोलें",
+                "p4.tag": "शिक्षा", "p4.name": "Restudio फॉर्म्स", "p4.version": "शिक्षकों के लिए",
+                "p4.desc": "Restudio Forms एक गतिशील फॉर्म बिल्डर है। आप एक शीर्षक और विवरण लिखते हैं, साइडबार से प्रश्न जोड़ते हैं, और पूरे फॉर्म को थीम रंग और फ़ॉन्ट परिवार से स्टाइल करते हैं।",
+                "p4.priceLabel": "स्थिति", "p4.priceValue": "लाइव", "p4.cta": "खोलें",
+                "p5.tag": "शिक्षा", "p5.name": "Restudio प्रेजेंटेशन", "p5.version": "शिक्षकों के लिए",
+                "p5.desc": "Restudio Presentation एक ब्राउज़र-आधारित प्रस्तुति संपादक है जो इंटरैक्टिव स्लाइड डेक बनाने के लिए है। टेक्स्ट, छवियाँ, आकृतियाँ और QR कोड जोड़ें; स्टाइल करें; एनिमेट करें; फिर पूर्वावलोकन मोड में प्रस्तुत करें।",
+                "p5.priceLabel": "स्थिति", "p5.priceValue": "लाइव", "p5.cta": "खोलें",
+                "p6.tag": "शिक्षा", "p6.name": "Restudio डॉक्युमेंट्स", "p6.version": "शिक्षकों के लिए",
+                "p6.desc": "Restudio Documents एक ब्राउज़र-आधारित दस्तावेज़ संपादक है जिसका टूलबार Restudio Presentation के समान है — इसलिए यदि आप दूसरे ऐप को जानते हैं तो सीखने की अवधि लगभग सपाट है।",
+                "p6.priceLabel": "स्थिति", "p6.priceValue": "लाइव", "p6.cta": "खोलें",
+                "p7.tag": "शिक्षा", "p7.name": "Restudio टेबल्स", "p7.version": "शिक्षकों के लिए",
+                "p7.desc": "Restudio Tables एक स्प्रेडशीट-शैली संपादक है जो डेटा की पंक्तियों और स्तंभों को व्यवस्थित करने के लिए है — टाइपिंग, सॉर्टिंग, फ़िल्टरिंग, मर्जिंग और रंग उपकरणों के साथ। डिफ़ॉल्ट ग्रिड 7 कॉलम (A–G) × 12 पंक्तियाँ = 84 सेल है।",
+                "p7.priceLabel": "स्थिति", "p7.priceValue": "लाइव", "p7.cta": "खोलें",
+                "why.eyebrow": "सिद्धांत", "why.title": "Restudio क्यों",
+                "why.subtitle": "Restudio Software Laboratories के तहत हर उत्पाद समान मुख्य सिद्धांतों को साझा करता है।",
+                "why.c1.title": "पूर्ण पारदर्शिता", "why.c1.desc": "कोई छिपी लाइब्रेरी नहीं, कोई ब्लैक बॉक्स नहीं। आप हमेशा जानते हैं कि आपके टूल के अंदर क्या चलता है।",
+                "why.c2.title": "वास्तविक प्रदर्शन", "why.c2.desc": "गति, दक्षता और न्यूनतम ओवरहेड पर केंद्रित हल्का आर्किटेक्चर।",
+                "why.c3.title": "लचीला एकीकरण", "why.c3.desc": "अपना स्टैक लाएं। हमारे उत्पाद आपके वर्कफ़्लो के अनुकूल होते हैं — न कि इसके विपरीत।",
+                "cta.title": "Restudio के साथ निर्माण के लिए तैयार हैं?",
+                "cta.subtitle": "हम आपका समर्थन करने के लिए तैयार हैं!",
+                "footer.copy": "RSL का हिस्सा (Restudio Software Laboratories) — © 2026 सर्वाधिकार सुरक्षित।",
+                "reject.title": "पहुंच प्रतिबंधित",
+                "reject.subtitle": "RestudioID वर्तमान में केवल <strong>डेवलपर खाते स्वीकार करता है</strong>।",
+                "reject.detected": "पता लगाया गया खाता प्रकार",
+                "reject.note": "<i class=\"fas fa-circle-info\"></i> यदि आप एक डेवलपर हैं और मानते हैं कि यह गलती है, तो <a href=\"mailto:restudiosupport@gmail.com\">Restudio सहायता</a> से संपर्क करें।",
+                "reject.btn": "समझ गया"
+            }
+        };
+
+        const LANG_LABELS = { en: "EN", ar: "AR", ja: "JA", zh: "ZH", hi: "HI" };
+        const RTL_LANGS = ["ar"];
+
+        function setLanguage(lang) {
+            if (!TRANSLATIONS[lang]) lang = "en";
+            localStorage.setItem("restudioLang", lang);
+            document.documentElement.lang = lang;
+            document.documentElement.dir = RTL_LANGS.includes(lang) ? "rtl" : "ltr";
+
+            const labelEl = document.getElementById("currentLangLabel");
+            if (labelEl) labelEl.textContent = LANG_LABELS[lang];
+
+            document.querySelectorAll("[data-i18n]").forEach(el => {
+                const key = el.getAttribute("data-i18n");
+                const val = TRANSLATIONS[lang][key];
+                if (val !== undefined) el.textContent = val;
+            });
+
+            document.querySelectorAll("[data-i18n-html]").forEach(el => {
+                const key = el.getAttribute("data-i18n-html");
+                const val = TRANSLATIONS[lang][key];
+                if (val !== undefined) el.innerHTML = val;
+            });
+
+            document.querySelectorAll(".lang-switcher__item").forEach(item => {
+                item.classList.toggle("active", item.dataset.lang === lang);
+            });
+
+            document.getElementById("langSwitcher")?.classList.remove("open");
+        }
+
+        function toggleLangMenu(e) {
+            e.stopPropagation();
+            document.getElementById("langSwitcher").classList.toggle("open");
+        }
+
+        document.addEventListener("click", (e) => {
+            const sw = document.getElementById("langSwitcher");
+            if (sw && !sw.contains(e.target)) sw.classList.remove("open");
+        });
+
+        const savedLang = localStorage.getItem("restudioLang") || "en";
+        setLanguage(savedLang);
+
+        /* ============================================================
+           RESTUDIO ID SYSTEM
+           ============================================================ */
+        const registerBtn    = document.getElementById('registerBtn');
+        const avatarNav      = document.getElementById('avatarNav');
+        const fileInput      = document.getElementById('restudioCardFileInput');
+        const modalOverlay   = document.getElementById('restudioAccountModal');
+        const modalDetails   = document.getElementById('restudioAccountDetails');
+        const rejectModal    = document.getElementById('restudioRejectModal');
+        const rejectTypeEl   = document.getElementById('rejectAccountType');
+
+        let currentMapInstance = null;
+        let currentProfileData = null;
+
+        function getAccountType(profile) {
+            return profile?.account_type || profile?.accountType || profile?.type || '';
+        }
+
+        function isDeveloperAccount(accountType) {
+            if (!accountType || typeof accountType !== 'string') return false;
+            const n = accountType.trim().toLowerCase();
+            return n === 'developer' || n.includes('developer') || n.includes('مطور');
+        }
+
+        function triggerRestudioCard() { fileInput.click(); }
+
+        function setLoggedInState(isLoggedIn) {
+            if (isLoggedIn) {
+                document.body.classList.add('logged-in');
+                registerBtn.style.display = 'none';
+                avatarNav.style.display = 'flex';
+            } else {
+                document.body.classList.remove('logged-in');
+                registerBtn.style.display = 'inline-flex';
+                avatarNav.style.display = 'none';
+                avatarNav.innerHTML = '';
+            }
+        }
+
+        fileInput.addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                try {
+                    const data = JSON.parse(event.target.result);
+                    if (!data || !data.profile) {
+                        alert('Invalid file — RestudioID card must contain a "profile" object.');
+                        return;
+                    }
+                    const accountType = getAccountType(data.profile);
+                    if (!isDeveloperAccount(accountType)) {
+                        showRejectionModal(accountType);
+                        return;
+                    }
+                    displayRestudioAccount(data);
+                    saveProfileAndUpdateUI(data);
+                } catch (err) {
+                    alert('Invalid JSON file. Please select a valid RestudioID card.');
+                    console.error(err);
+                } finally {
+                    e.target.value = '';
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        function saveProfileAndUpdateUI(data) {
+            try {
+                localStorage.setItem('restudioProfile', JSON.stringify(data));
+                currentProfileData = data;
+                updateUIWithProfile(data);
+            } catch (e) { console.warn(e); }
+        }
+
+        function loadProfileFromStorage() {
+            try {
+                const stored = localStorage.getItem('restudioProfile');
+                if (!stored) {
+                    setLoggedInState(false);
+                    return;
+                }
+                const data = JSON.parse(stored);
+                if (!data || !data.profile) {
+                    localStorage.removeItem('restudioProfile');
+                    setLoggedInState(false);
+                    return;
+                }
+                const accountType = getAccountType(data.profile);
+                if (!isDeveloperAccount(accountType)) {
+                    localStorage.removeItem('restudioProfile');
+                    setLoggedInState(false);
+                    return;
+                }
+                currentProfileData = data;
+                updateUIWithProfile(data);
+            } catch (e) {
+                localStorage.removeItem('restudioProfile');
+                setLoggedInState(false);
+            }
+        }
+
+        function updateUIWithProfile(data) {
+            const profile = data.profile;
+            if (!profile) return;
+
+            setLoggedInState(true);
+
+            const avatarBase64 = profile.avatar_base64 || null;
+            const username = profile.username || 'User';
+
+            avatarNav.innerHTML = '';
+
+            if (avatarBase64) {
+                const img = document.createElement('img');
+                img.src = avatarBase64;
+                img.alt = username;
+                avatarNav.appendChild(img);
+            } else {
+                const fallback = document.createElement('span');
+                fallback.className = 'fallback-icon';
+                fallback.textContent = username.charAt(0).toUpperCase() || '👤';
+                avatarNav.appendChild(fallback);
+            }
+
+            avatarNav.onclick = showProfileFromStorage;
+        }
+
+        function showProfileFromStorage() {
+            if (currentProfileData) { displayRestudioAccount(currentProfileData); return; }
+            try {
+                const stored = localStorage.getItem('restudioProfile');
+                if (stored) {
+                    const data = JSON.parse(stored);
+                    if (data && data.profile) { currentProfileData = data; displayRestudioAccount(data); return; }
+                }
+            } catch (e) {}
+            alert('No profile data found. Please register via RestudioID card.');
+        }
+
+        function getAccountTypeIcon(type) {
+            const lower = (type || '').toLowerCase();
+            if (lower.includes('developer')) return 'fas fa-code';
+            if (lower.includes('publisher')) return 'fas fa-rocket';
+            if (lower.includes('official'))  return 'fas fa-check-circle';
+            if (lower.includes('study'))     return 'fas fa-school';
+            return 'fas fa-user';
+        }
+
+        function displayRestudioAccount(data) {
+            if (!data || !data.profile) {
+                modalDetails.innerHTML = `<div class="account-empty"><i class="fas fa-exclamation-triangle" style="font-size:2rem; color:#f59e0b;"></i><p style="margin-top:10px;">Invalid RestudioID card format.</p></div>`;
+                modalOverlay.classList.add('active');
+                return;
+            }
+            const typeCheck = getAccountType(data.profile);
+            if (!isDeveloperAccount(typeCheck)) { showRejectionModal(typeCheck); return; }
+
+            const profile = data.profile;
+            const username = profile.username || 'Unknown User';
+            const handle = profile.user_handle || 'No ID';
+            const accountType = profile.account_type || 'Developer';
+            const avatarBase64 = profile.avatar_base64 || null;
+            const bannerBase64 = profile.banner_base64 || null;
+
+            const hasLocation = profile.location
+                && profile.location.latitude !== undefined
+                && profile.location.longitude !== undefined
+                && profile.location.latitude !== null
+                && profile.location.longitude !== null
+                && !isNaN(profile.location.latitude)
+                && !isNaN(profile.location.longitude);
+
+            let bannerClass = 'account-banner';
+            let bannerStyle = '';
+            if (bannerBase64) bannerStyle = `style="background-image: url('${bannerBase64}')"`;
+            else bannerClass += ' no-banner';
+
+            const avatarHtml = avatarBase64
+                ? `<div class="account-avatar" style="background-image: url('${avatarBase64}')"></div>`
+                : `<div class="account-avatar"><i class="fas fa-user-circle"></i></div>`;
+
+            const accountTypeIcon = getAccountTypeIcon(accountType);
+
+            const locationSection = hasLocation
+                ? `<div class="map-section"><div class="map-section-label"><i class="fas fa-map-marker-alt"></i> Location</div><div class="map-container" id="accountLocationMap" data-lat="${profile.location.latitude}" data-lng="${profile.location.longitude}"></div></div>`
+                : `<div class="map-section"><div class="map-section-label"><i class="fas fa-map-marker-alt"></i> Location</div><div class="map-container"><div class="map-fallback"><i class="fas fa-map-marked-alt"></i><p>No location data available</p></div></div></div>`;
+
+            modalDetails.innerHTML = `
+                <div class="${bannerClass}" ${bannerStyle}></div>
+                <div class="account-avatar-wrapper">
+                    ${avatarHtml}
+                    <div class="account-info">
+                        <h3>${username}</h3>
+                        <div class="account-type"><i class="${accountTypeIcon}"></i> ${accountType}</div>
+                        <div class="account-id"><i class="fas fa-id-badge"></i> ID: ${handle}</div>
+                    </div>
+                </div>
+                <div class="account-details">
+                    <p><strong>Username:</strong> ${username}</p>
+                    <p><strong>Handle:</strong> @${handle}</p>
+                    <p><strong>Account Type:</strong> ${accountType}</p>
+                    ${profile.age ? `<p><strong>Age:</strong> ${profile.age}</p>` : ''}
+                    ${profile.bio_text ? `<p><strong>Bio:</strong> ${profile.bio_text}</p>` : ''}
+                </div>
+                ${locationSection}
+                <div class="modal-actions">
+                    <button class="modal-btn" onclick="downloadCard()"><i class="fas fa-download"></i> Take out your card</button>
+                    <button class="modal-btn danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> LOG OUT</button>
+                </div>`;
+
+            modalOverlay.classList.add('active');
+            if (hasLocation) setTimeout(() => initializeLocationMap(profile.location.latitude, profile.location.longitude), 150);
+        }
+
+        function initializeLocationMap(lat, lng) {
+            if (currentMapInstance) { try { currentMapInstance.remove(); } catch (e) {} currentMapInstance = null; }
+            const mapContainer = document.getElementById('accountLocationMap');
+            if (!mapContainer) return;
+            try {
+                const map = new maplibregl.Map({
+                    container: 'accountLocationMap',
+                    style: {
+                        version: 8,
+                        sources: {
+                            osm: {
+                                type: 'raster',
+                                tiles: [
+                                    'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                    'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                    'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png'
+                                ],
+                                tileSize: 256,
+                                attribution: '© OpenStreetMap contributors',
+                                maxzoom: 19
+                            }
+                        },
+                        layers: [{ id: 'osm-layer', type: 'raster', source: 'osm', minzoom: 0, maxzoom: 19 }]
+                    },
+                    center: [lng, lat],
+                    zoom: 14,
+                    attributionControl: { compact: true }
+                });
+                map.addControl(new maplibregl.NavigationControl({ showCompass: true, showZoom: true }), 'top-right');
+                const markerEl = document.createElement('div');
+                markerEl.className = 'custom-marker';
+                new maplibregl.Marker({ element: markerEl, anchor: 'center' }).setLngLat([lng, lat]).addTo(map);
+                new maplibregl.Popup({ offset: 18, closeButton: false, closeOnClick: false, maxWidth: '220px' })
+                    .setLngLat([lng, lat])
+                    .setHTML(`<div style="text-align:center;"><strong>📍 User Location</strong><br><span>${lat.toFixed(6)}, ${lng.toFixed(6)}</span></div>`)
+                    .addTo(map);
+                currentMapInstance = map;
+                setTimeout(() => { if (currentMapInstance === map) map.resize(); }, 300);
+            } catch (error) {
+                const bbox = [lng - 0.01, lat - 0.01, lng + 0.01, lat + 0.01].join('%2C');
+                mapContainer.innerHTML = `<iframe width="100%" height="100%" frameborder="0" scrolling="no" src="https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat}%2C${lng}" style="border:0; width:100%; height:100%;" loading="lazy"></iframe>`;
+            }
+        }
+
+        function showRejectionModal(accountType) {
+            rejectTypeEl.textContent = accountType || 'Unknown (not specified)';
+            rejectModal.classList.add('active');
+        }
+        function closeRejectModal() { rejectModal.classList.remove('active'); }
+        rejectModal.addEventListener('click', function (e) { if (e.target === this) closeRejectModal(); });
+
+        function downloadCard() {
+            if (!currentProfileData) { alert('No card data available.'); return; }
+            const jsonStr = JSON.stringify(currentProfileData, null, 2);
+            const blob = new Blob([jsonStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `RestudioID_${currentProfileData.profile.user_handle || 'card'}.json`;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to log out? Your card data will be removed from this browser.')) {
+                localStorage.removeItem('restudioProfile');
+                currentProfileData = null;
+                setLoggedInState(false);
+                closeRestudioModal();
+            }
+        }
+
+        function closeRestudioModal() {
+            if (currentMapInstance) { try { currentMapInstance.remove(); } catch (e) {} currentMapInstance = null; }
+            modalOverlay.classList.remove('active');
+        }
+        modalOverlay.addEventListener('click', function (e) { if (e.target === this) closeRestudioModal(); });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') { closeRestudioModal(); closeRejectModal(); }
+        });
+        window.addEventListener('resize', function () {
+            if (currentMapInstance) { try { currentMapInstance.resize(); } catch (e) {} }
+        });
+        window.addEventListener('load', loadProfileFromStorage);
+    </script>
+
+</body>
+</html>
